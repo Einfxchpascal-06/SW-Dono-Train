@@ -42,12 +42,14 @@ app.post('/reset', (req, res) => {
 });
 
 app.post('/kofi', (req, res) => {
-  const secret = process.env.KOFI_SECRET;
-  if (!secret) return res.status(500).json({ error: 'KOFI_SECRET not set' });
+  console.log("💬 Incoming POST /kofi");
+  console.log("Body received:", req.body);
 
-const kofiVerification = "b1c80c22-ba70-4368-a35b-fcb517c562b6";
-if (req.body?.verification_token && req.body.verification_token !== kofiVerification)
-  return res.status(403).json({ error: 'invalid token' });
+  const kofiVerification = "b1c80c22-ba70-4368-a35b-fcb517c562b6";
+  if (req.body?.verification_token && req.body.verification_token !== kofiVerification) {
+    console.log("❌ Invalid verification_token:", req.body.verification_token);
+    return res.status(403).json({ error: 'invalid token' });
+  }
 
   const channel = (req.query.channel || 'default').toLowerCase();
   const data = req.body?.data || req.body;
@@ -59,8 +61,11 @@ if (req.body?.verification_token && req.body.verification_token !== kofiVerifica
   const next = cur + eurosToCents(amount);
   setState(channel, next);
 
+  console.log(`✅ Added ${amount} to ${channel}, new total: €${(next/100).toFixed(2)}`);
+
   res.json({ ok: true, totalCents: next });
 });
+
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log('Dono-Train backend running on port ' + port));
