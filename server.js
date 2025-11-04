@@ -49,9 +49,9 @@ app.post("/kofi", (req, res) => {
 
   try {
     const body = req.body;
-
-    // Allow raw string or parsed JSON
     let data = body;
+
+    // parse raw string if needed
     if (typeof body === "string") {
       try {
         data = JSON.parse(body);
@@ -82,7 +82,7 @@ app.post("/kofi", (req, res) => {
   }
 });
 
-// ========== MANUAL ADD (used by overlay) ==========
+// ========== MANUAL ADD (overlay test) ==========
 app.post("/add", (req, res) => {
   const { channel, amount } = req.body;
   if (!channel || !amount) {
@@ -98,7 +98,7 @@ app.post("/add", (req, res) => {
   res.json({ success: true });
 });
 
-// ========== GET CURRENT STATE ==========
+// ========== GET STATE ==========
 app.get("/state", (req, res) => {
   const channel = req.query.channel || "Soundwave1111";
   const totalCents = totals[channel] || 0;
@@ -111,7 +111,7 @@ app.get("/state", (req, res) => {
   });
 });
 
-// ========== RESET ENDPOINT (optional) ==========
+// ========== RESET ==========
 app.post("/reset", (req, res) => {
   const { channel } = req.body;
   if (!channel) return res.status(400).json({ error: "Missing channel" });
@@ -121,6 +121,15 @@ app.post("/reset", (req, res) => {
 
   console.log(`🔄 Reset total for ${channel}`);
   res.json({ success: true });
+});
+
+// ========== DEBUG (optional nice overview) ==========
+app.get("/debug", (req, res) => {
+  res.json({
+    totals,
+    lastDonation,
+    channels: Object.keys(totals),
+  });
 });
 
 // ========== START SERVER ==========
