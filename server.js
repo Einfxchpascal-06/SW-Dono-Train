@@ -45,8 +45,9 @@ app.post('/kofi', (req, res) => {
   const secret = process.env.KOFI_SECRET;
   if (!secret) return res.status(500).json({ error: 'KOFI_SECRET not set' });
 
-  if (req.body?.verification_token && req.body.verification_token !== secret)
-    return res.status(403).json({ error: 'invalid token' });
+const kofiVerification = "b1c80c22-ba70-4368-a35b-fcb517c562b6";
+if (req.body?.verification_token && req.body.verification_token !== kofiVerification)
+  return res.status(403).json({ error: 'invalid token' });
 
   const channel = (req.query.channel || 'default').toLowerCase();
   const data = req.body?.data || req.body;
